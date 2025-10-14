@@ -78,9 +78,19 @@ FreezeScreen {
     }
 
     function processScreenshot(x, y, width, height) {
+        const monitors = Hyprland.monitors.values
+
+        var monitorOffset = undefined
+        for (const monitor of monitors) {
+            if (!monitorOffset) monitorOffset = monitor
+            else if (monitor.x < monitorOffset.x) monitorOffset = monitor
+            else if (monitor.x == monitorOffset.x) monitorOffset = monitor.y < monitorOffset.y ? monitorOffset : monitor
+            else continue
+        }
+
         const scale = hyprlandMonitor.scale
-        const scaledX = Math.round((x + root.hyprlandMonitor.x) * scale)
-        const scaledY = Math.round((y + root.hyprlandMonitor.y) * scale)
+        const scaledX = Math.round((x + root.hyprlandMonitor.x - monitorOffset.x) * scale)
+        const scaledY = Math.round((y + root.hyprlandMonitor.y - monitorOffset.y) * scale)
         const scaledWidth = Math.round(width * scale)
         const scaledHeight = Math.round(height * scale)
 
